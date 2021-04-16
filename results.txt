@@ -1,0 +1,42 @@
+bandpower(final,250,[8,30],5)  // with knn 5 gives 44.5687
+bandpower(final,250,[8,30],5); // with knn 7 gives 44.6793
+
+bandpower(final,250,[8,30],6); // with knn 5 gives 52.458
+bandpower(final,250,[8,30],6); // with knn 6 gives 52.384
+Msvm = fitcsvm(train_table,'Class','ClassNames',[1,2],'Standardize', 1,'KernelFunction', 'Polynomial','Verbose',2,'BoxConstraint', 3);
+//got 60.9609 for the above
+Msvm = fitcsvm(train_table,'Class','ClassNames',[1,2],'Standardize', 1,'KernelFunction', 'Polynomial','Verbose',2,'BoxConstraint', 2);
+//got 61.197
+
+//same as above svm but psd is modified bp = bandpower(final,250,[8,30]); //iterations 296529 // acc = 42.9467
+
+Msvm = fitcsvm(train_table,'Class','ClassNames',[1,2]); //acc=65.9516
+
+Msvm = fitcsvm(train_table,'Class','ClassNames',[1,2],'Standardise',1); //acc=64.4096
+
+Msvm = fitcecoc(train_table,'Class') //psd band 8-30 //acc 41.3191
+
+Msvm1 = fitcecoc(train_table,'Class','Coding','allpairs'); %acc =40.7477
+
+Msvm2 = fitcecoc(train_table,'Class','Coding','binarycomplete'); %acc = 39.9268
+
+Msvm3 = fitcecoc(train_table,'Class','Coding','onevsall'); %acc = 33.8973
+
+Msvm4 = fitcecoc(train_table,'Class','Coding','ordinal'); %acc = 30.5913
+
+Mnb = fitcnb(train_table,'Class',''DistributionNames','normal'); %acc = 28.9328
+
+
+Accuracy shooted up
+
+Msvm1 = fitcecoc(train_table,'Class','Coding','allpairs','Learners',t); %acc =94.362 with kernel as rbf and validation accuracy 94.03
+
+Msvm1 = fitcecoc(train_table,'Class','Coding','allpairs','Learners',t); %acc =91.746 with kernel as rbf and validation accuracy 91.25
+
+Msvm1 = fitcecoc(train_table,'Class','Coding','allpairs','Learners',t); %acc =94.3865 with kernel as rbf and Solver as 'SMO'
+
+Msvm1 = fitcecoc(train_table,'Class','Coding','allpairs','Learners',t); %acc =40.5148 with kernel as linear and Solver as 'SMO' // this is Nan removed
+
+Msvm1 = fitcecoc(train_table,'Class','Coding','allpairs','Learners',t); %acc =94.5196 with kernel as rbf and Solver as 'ISDA' // this is Nan removed
+
+Msvm1 = fitcecoc(train_table,'Class','Coding','allpairs','Learners',t); %acc =94.3921 with kernel as rbf and Solver as 'SMO' // this is Nan removed

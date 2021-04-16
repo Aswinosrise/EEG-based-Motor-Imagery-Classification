@@ -1,0 +1,66 @@
+%%%%%%%%%%% loading data %%%%%%%%%%%%%%%%%
+warning('off','all');
+file_path1 = 'datset/A01T.gdf';
+file_path2 = 'datset/A02T.gdf';
+file_path3 = 'datset/A03T.gdf';
+file_path4 = 'datset/A04T.gdf';
+file_path5 = 'datset/A05T.gdf';
+file_path6 = 'datset/A06T.gdf';
+file_path7 = 'datset/A07T.gdf';
+file_path8 = 'datset/A08T.gdf';
+file_path9 = 'datset/A09T.gdf';
+
+[x1, y1] = sload(file_path1, 0, 'OVERFLOWDETECTION:OFF');
+[x2, y2] = sload(file_path2, 0, 'OVERFLOWDETECTION:OFF');
+[x3, y3] = sload(file_path3, 0, 'OVERFLOWDETECTION:OFF');
+[x4, y4] = sload(file_path4, 0, 'OVERFLOWDETECTION:OFF');
+[x5, y5] = sload(file_path5, 0, 'OVERFLOWDETECTION:OFF');
+[x6, y6] = sload(file_path6, 0, 'OVERFLOWDETECTION:OFF');
+[x7, y7] = sload(file_path7, 0, 'OVERFLOWDETECTION:OFF');
+[x8, y8] = sload(file_path8, 0, 'OVERFLOWDETECTION:OFF');
+[x9, y9] = sload(file_path9, 0, 'OVERFLOWDETECTION:OFF');
+
+%%%%%%%%%%% artifact processing and feature extraction %%%%%%%%%%%
+data_set1 = eeg_expt(x1, y1, file_path1);
+data_set2 = eeg_expt(x2, y2, file_path2);
+data_set3 = eeg_expt(x3, y3, file_path3);
+data_set4 = eeg_expt(x4, y4, file_path4);
+data_set5 = eeg_expt(x5, y5, file_path5);
+data_set6 = eeg_expt(x6, y6, file_path6);
+data_set7 = eeg_expt(x7, y7, file_path7);
+data_set8 = eeg_expt(x8, y8, file_path8);
+data_set9 = eeg_expt(x9, y9, file_path9);
+
+%%%% combining both data sets %%%%%%%%%
+data_set = [data_set1 ; data_set2; data_set3; data_set4; data_set5; data_set6; data_set7; data_set8; data_set9];
+
+%%%%%%% shuffling them %%%%%%%%%%%
+data_set = data_set(randperm(end),:);
+
+%%%%%%%%%% splitting them for test and train as 80 and 20 %%%%%%%%%%
+eval = mat2cell(data_set, [ceil(0.8*size(data_set,1)) ceil(0.1*size(data_set,1))-1],6887);
+train_set=eval{1,1};
+test_set=eval{2,1};
+
+%%svm
+disp('Msvm has started');
+disp('Ongoing');
+
+%declaring svm template for use with fitcecoc
+svm_linear=templateSVM('KernelFunction','linear');%,'Solver','L1QP');
+svm_poly=templateSVM('KernelFunction','polynomial');%,'Solver','L1QP');
+svm_rbf=templateSVM('KernelFunction','rbf');%,'Solver','L1QP');
+
+%Generating models for finding the model with maximum accuracy
+
+Msvm1 = fitcecoc(train_set(:,1:6886),train_set(:,6887),'Coding','allpairs','Learners',svm_linear);
+Msvm2 = fitcecoc(train_set(:,1:6886),train_set(:,6887),'Coding','allpairs','Learners',svm_poly);
+Msvm3 = fitcecoc(train_set(:,1:6886),train_set(:,6887),'Coding','allpairs','Learners',svm_rbf); 
+
+disp('Models Generated');
+
+acc_expt(Msvm1, Msvm2, Msvm3, test_set, train_set);
+%Msvm2 = fitcecoc(train_table,'Class','Coding','binarycomplete');
+%Msvm3 = fitcecoc(train_table,'Class','Coding','onevsall');
+%Msvm4 = fitcecoc(train_table,'Class','Coding','ordinal');
+%Msvm = fitcsvm(train_table,'Class','ClassNames',[1,2],'KernelFunction', 'Polynomial');

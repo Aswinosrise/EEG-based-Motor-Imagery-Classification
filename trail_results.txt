@@ -1,0 +1,13 @@
+For trial based data
+
+with ICA
+
+SMO 1 set acc
+   46.4286
+   39.2857
+   17.8571
+  
+ISDA 1 set acc
+   39.2857
+   25.0000
+   14.2857
